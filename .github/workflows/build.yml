@@ -48,7 +48,7 @@ jobs:
       - name: Install nix
         uses: DeterminateSystems/determinate-nix-action@9adf02b41cfdac2632e1c16f0480ff5bf3b05dd6 # v3.21.1
         with:
-          use-flakehub: false
+          # use-flakehub: false
           extra-conf: |
             experimental-features = nix-command flakes
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
