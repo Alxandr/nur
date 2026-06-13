@@ -3,14 +3,16 @@
 # so if you correctly mark packages as
 #
 # - broken (using `meta.broken`),
-# - unfree (using `meta.license.free`), and
+# - redistributable (using `meta.license.redistributable`), and
 # - locally built (using `preferLocalBuild`)
 #
 # then your CI will be able to build and cache only those packages for
 # which this is possible.
 
 {
-  pkgs ? import <nixpkgs> { },
+  pkgs ? import <nixpkgs> {
+    config.allowUnfree = true;
+  },
 }:
 
 with builtins;
