@@ -13,7 +13,7 @@
         import ./default.nix {
           pkgs = import nixpkgs {
             inherit system;
-            allowUnfree = true;
+            config.allowUnfree = true;
           };
         }
       );
