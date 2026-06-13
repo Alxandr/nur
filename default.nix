@@ -11,17 +11,33 @@
   pkgs ? import <nixpkgs> { },
 }:
 
-{
-  # The `lib`, `overlays`, `nixosModules`, `homeModules`,
-  # `darwinModules` and `flakeModules` names are special
-  lib = import ./lib { inherit pkgs; }; # functions
-  nixosModules = import ./nixos-modules; # NixOS modules
-  # homeModules = { }; # Home Manager modules
-  # darwinModules = { }; # nix-darwin modules
-  # flakeModules = { }; # flake-parts modules
-  overlays = import ./overlays; # nixpkgs overlays
+let
+  inherit (pkgs) lib;
 
-  example-package = pkgs.callPackage ./pkgs/example-package { };
-  # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
-  # ...
-}
+  packageDirs = lib.filterAttrs (
+    dirName: type: type == "directory" && builtins.pathExists (./pkgs + "/${dirName}/default.nix")
+  ) (builtins.readDir ./pkgs);
+
+  discoveredPackages = lib.fix (
+    self:
+    lib.mapAttrs' (
+      dirName: _:
+      let
+        pkg = lib.callPackageWith (pkgs // self) (./pkgs + "/${dirName}") { };
+      in
+      lib.nameValuePair dirName pkg
+    ) packageDirs
+  );
+
+  specialAttrs = {
+    # The `lib`, `overlays`, `nixosModules`, `homeModules`,
+    # `darwinModules` and `flakeModules` names are special
+    lib = import ./lib { inherit pkgs; }; # functions
+    nixosModules = import ./nixos-modules; # NixOS modules
+    # homeModules = { }; # Home Manager modules
+    # darwinModules = { }; # nix-darwin modules
+    # flakeModules = { }; # flake-parts modules
+    overlays = import ./overlays; # nixpkgs overlays
+  };
+in
+specialAttrs // discoveredPackages

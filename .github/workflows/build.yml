@@ -81,9 +81,10 @@ jobs:
             --file ./ci.nix \
             -A cacheOutputs \
             --skip-cached \
-            --attic-cache '${{ env.atticCacheName }}' \
-            --attic-push-build-closure \
             --no-nom
+
+          # --attic-cache '${{ env.atticCacheName }}' \ # not yet supported on 26.05
+          # --attic-push-build-closure \
 
       # - name: Trigger NUR update
       #   # Don't replace <YOUR_REPO_NAME> here!
