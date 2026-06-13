@@ -33,6 +33,7 @@ env:
 jobs:
   tests:
     strategy:
+      fail-fast: false
       matrix:
         nixPath:
           - nixpkgs=https://github.com/NixOS/nixpkgs/archive/refs/heads/nixpkgs-unstable.tar.gz
@@ -75,7 +76,7 @@ jobs:
             -I $PWD
 
       - name: Build nix packages
-        run: nix shell -f '<nixpkgs>' nix-build-uncached -c nix-build-uncached ci.nix -A cacheOutputs
+        run: nix shell -f '<nixpkgs>' nix-fast-build -c nix-fast-build --file ./ci.nix -A cacheOutputs --skip-cached
 
       # - name: Trigger NUR update
       #   # Don't replace <YOUR_REPO_NAME> here!
