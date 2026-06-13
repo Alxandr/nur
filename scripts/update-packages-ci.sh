@@ -16,22 +16,26 @@ git fetch "$remote" "$main_branch"
 base_ref="$remote/$main_branch"
 
 mapfile -t packages < <(nix-shell scripts/update.nix --arg list true)
+failed_packages=()
 
-for package in "${packages[@]}"; do
-  branch="update/$package"
+update_package() (
+  set -euo pipefail
+
+  local package="$1"
+  local branch="update/$package"
 
   git switch -C "$main_branch" "$base_ref"
   git reset --hard "$base_ref"
   git clean -fd
 
-	# Fetch the (PR) branch from the remote (if it exists), such that `push --force-with-lease` works
+  # Fetch the (PR) branch from the remote (if it exists), such that `push --force-with-lease` works.
   git fetch "$remote" "$branch:refs/remotes/$remote/$branch" || true
 
   nix-shell scripts/update.nix --argstr package "$package" --arg allow-dirty true
 
   if git diff --quiet --exit-code; then
     echo "Skipping $package: already up to date."
-    continue
+    return 0
   fi
 
   git branch -D "$branch" >/dev/null 2>&1 || true
@@ -48,4 +52,23 @@ for package in "${packages[@]}"; do
       --label "automerge" \
       --label "pkgs/$package"
   fi
+)
+
+for package in "${packages[@]}"; do
+  echo "::group::update $package"
+  set +e
+  update_package "$package"
+  status=$?
+  set -e
+  echo "::endgroup::"
+
+  if (( status != 0 )); then
+    failed_packages+=("$package")
+  fi
 done
+
+if (( ${#failed_packages[@]} != 0 )); then
+  printf 'Failed package updates:\n' >&2
+  printf ' - %s\n' "${failed_packages[@]}" >&2
+  exit 1
+fi
