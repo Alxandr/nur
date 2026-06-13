@@ -1,4 +1,5 @@
 {
+  meta,
   src,
   stdenvNoCC,
   pkgs,
@@ -55,4 +56,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  inherit meta;
 })

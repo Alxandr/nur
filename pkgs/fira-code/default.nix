@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   fetchFromGitHub,
   useVariableFont ? true,
@@ -12,8 +13,18 @@ let
     sha256 = "sha256-2/64g+J9l3XVcYJ2yRsrY5jnQzU+OT6Madl97mCzTuk=";
   };
 
+  meta = {
+    description = "Monospaced font with programming ligatures";
+    homepage = "https://github.com/tonsky/FiraCode";
+    license = lib.licenses.ofl;
+  };
+
 in
 if useVariableFont then
-  pkgs.callPackage ./vf.nix { src = src; }
+  pkgs.callPackage ./vf.nix {
+    inherit meta src;
+  }
 else
-  pkgs.callPackage ./ttf.nix { src = src; }
+  pkgs.callPackage ./ttf.nix {
+    inherit meta src;
+  }

@@ -1,4 +1,5 @@
 {
+  meta,
   src,
   stdenvNoCC,
   pkgs,
@@ -58,8 +59,5 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # ];
   };
 
-  meta = {
-    homepage = "https://github.com/tonsky/FiraCode";
-    license = lib.licenses.ofl;
-  };
+  inherit meta;
 })

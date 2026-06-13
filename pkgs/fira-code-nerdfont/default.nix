@@ -1,4 +1,5 @@
 {
+  lib,
   stdenvNoCC,
   pkgs,
   fira-code,
@@ -59,4 +60,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  meta = {
+    description = "Fira Code font patched with Nerd Fonts glyphs";
+    homepage = "https://github.com/tonsky/FiraCode";
+    license = lib.licenses.ofl;
+  };
 })

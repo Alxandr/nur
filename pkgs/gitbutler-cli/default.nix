@@ -65,6 +65,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   meta = {
+    description = "Command-line interface for GitButler";
     homepage = "https://gitbutler.com";
     license = lib.licenses.fsl11Mit;
     platforms = lib.platforms.linux;
