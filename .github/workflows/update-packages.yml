@@ -1,0 +1,31 @@
+name: "Update packages"
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "17 4 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+
+      - name: Install nix
+        uses: DeterminateSystems/determinate-nix-action@9adf02b41cfdac2632e1c16f0480ff5bf3b05dd6 # v3.21.1
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update packages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/update-packages-ci.sh

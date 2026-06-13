@@ -56,7 +56,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   passthru = {
-    update = nix-update-script {
+    updateScript = nix-update-script {
       extraArgs = [
         "--version-regex"
         "release/(.*)"

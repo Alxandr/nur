@@ -1,10 +1,10 @@
 {
   meta,
   src,
+  updateScript,
   stdenvNoCC,
   pkgs,
   lib,
-  nix-update-script,
 }:
 
 let
@@ -52,11 +52,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  update = nix-update-script {
-    # extraArgs = [
-    #   "--version-regex"
-    #   "release/(.*)"
-    # ];
+  passthru = {
+    inherit updateScript;
   };
 
   inherit meta;

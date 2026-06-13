@@ -1,6 +1,7 @@
 {
   meta,
   src,
+  updateScript,
   stdenvNoCC,
   pkgs,
   lib,
@@ -56,6 +57,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  passthru = {
+    inherit updateScript;
+  };
 
   inherit meta;
 })

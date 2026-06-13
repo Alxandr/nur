@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main_branch="${UPDATE_BASE_BRANCH:-main}"
+remote="${UPDATE_REMOTE:-origin}"
+
+if [[ -z "${GH_TOKEN:-}" ]]; then
+  echo "GH_TOKEN is required" >&2
+  exit 1
+fi
+
+git config user.name "github-actions[bot]"
+git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+git fetch "$remote" "$main_branch"
+base_ref="$remote/$main_branch"
+
+mapfile -t packages < <(nix-shell scripts/update.nix --arg list true)
+
+for package in "${packages[@]}"; do
+  branch="update/$package"
+
+  git switch -C "$main_branch" "$base_ref"
+  git reset --hard "$base_ref"
+  git clean -fd
+
+	# Fetch the (PR) branch from the remote (if it exists), such that `push --force-with-lease` works
+  git fetch "$remote" "$branch:refs/remotes/$remote/$branch" || true
+
+  nix-shell scripts/update.nix --argstr package "$package" --arg allow-dirty true
+
+  if git diff --quiet --exit-code; then
+    echo "Skipping $package: already up to date."
+    continue
+  fi
+
+  git branch -D "$branch" >/dev/null 2>&1 || true
+  git switch -c "$branch"
+  git add -A
+  git commit -m "deps: update $package"
+  git push --force-with-lease "$remote" "$branch"
+
+  if ! gh pr list --state open --head "$branch" --json number --jq 'length' | grep -qx '[1-9][0-9]*'; then
+    gh pr create \
+      --base "$main_branch" \
+      --head "$branch" \
+      --title "deps: update $package" \
+      --label "automerge" \
+      --label "pkgs/$package"
+  fi
+done

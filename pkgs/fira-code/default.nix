@@ -3,6 +3,7 @@
   pkgs,
   fetchFromGitHub,
   useVariableFont ? true,
+  nix-update-script,
 }:
 
 let
@@ -11,6 +12,15 @@ let
     repo = "FiraCode";
     rev = "727682c24c33fb0bbc7ab0ed9b7a8d0d9745a198";
     sha256 = "sha256-2/64g+J9l3XVcYJ2yRsrY5jnQzU+OT6Madl97mCzTuk=";
+  };
+
+  updateScript = nix-update-script {
+    extraArgs = [
+      "--version"
+      "branch"
+      "--override-filename"
+      "pkgs/fira-code/default.nix"
+    ];
   };
 
   meta = {
@@ -22,9 +32,9 @@ let
 in
 if useVariableFont then
   pkgs.callPackage ./vf.nix {
-    inherit meta src;
+    inherit meta src updateScript;
   }
 else
   pkgs.callPackage ./ttf.nix {
-    inherit meta src;
+    inherit meta src updateScript;
   }
