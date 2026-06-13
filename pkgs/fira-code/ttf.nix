@@ -3,6 +3,7 @@
   stdenvNoCC,
   pkgs,
   lib,
+  nix-update-script,
 }:
 
 let
@@ -49,4 +50,16 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  update = nix-update-script {
+    # extraArgs = [
+    #   "--version-regex"
+    #   "release/(.*)"
+    # ];
+  };
+
+  meta = {
+    homepage = "https://github.com/tonsky/FiraCode";
+    license = lib.licenses.ofl;
+  };
 })

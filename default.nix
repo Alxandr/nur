@@ -13,21 +13,31 @@
 
 let
   inherit (pkgs) lib;
+  hostSystem = pkgs.stdenv.hostPlatform.system;
 
   packageDirs = lib.filterAttrs (
     dirName: type: type == "directory" && builtins.pathExists (./pkgs + "/${dirName}/default.nix")
   ) (builtins.readDir ./pkgs);
 
-  discoveredPackages = lib.fix (
-    self:
-    lib.mapAttrs' (
-      dirName: _:
-      let
-        pkg = lib.callPackageWith (pkgs // self) (./pkgs + "/${dirName}") { };
-      in
-      lib.nameValuePair dirName pkg
-    ) packageDirs
-  );
+  supportsHostPlatform = pkg: !(pkg.meta ? platforms) || builtins.elem hostSystem pkg.meta.platforms;
+
+  candidatePackages = lib.mapAttrs' (
+    dirName: _:
+    let
+      pkg = lib.callPackageWith (pkgs // scopedPackages) (./pkgs + "/${dirName}") { };
+    in
+    lib.nameValuePair dirName pkg
+  ) packageDirs;
+
+  scopedPackages = lib.mapAttrs (
+    dirName: pkg:
+    if supportsHostPlatform pkg then
+      pkg
+    else
+      throw "Package '${dirName}' is not supported on ${hostSystem}"
+  ) candidatePackages;
+
+  discoveredPackages = lib.filterAttrs (_: supportsHostPlatform) candidatePackages;
 
   specialAttrs = {
     # The `lib`, `overlays`, `nixosModules`, `homeModules`,
