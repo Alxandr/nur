@@ -76,7 +76,14 @@ jobs:
             -I $PWD
 
       - name: Build nix packages
-        run: nix shell -f '<nixpkgs>' nix-fast-build -c nix-fast-build --file ./ci.nix -A cacheOutputs --skip-cached
+        run: |
+          nix shell -f '<nixpkgs>' nix-fast-build -c nix-fast-build \
+            --file ./ci.nix \
+            -A cacheOutputs \
+            --skip-cached \
+            --attic-cache '${{ env.atticCacheName }}' \
+            --attic-push-build-closure \
+            --no-nom
 
       # - name: Trigger NUR update
       #   # Don't replace <YOUR_REPO_NAME> here!
