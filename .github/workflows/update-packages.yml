@@ -28,4 +28,5 @@ jobs:
       - name: Update packages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/update-packages-ci.sh

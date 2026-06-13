@@ -18,6 +18,14 @@ base_ref="$remote/$main_branch"
 mapfile -t packages < <(nix-shell scripts/update.nix --arg list true)
 failed_packages=()
 
+ensure_label() {
+  local label="$1"
+  local color="$2"
+  local description="$3"
+
+  gh label create "$label" --color "$color" --description "$description" >/dev/null 2>&1 || true
+}
+
 update_package() (
   set -euo pipefail
 
@@ -45,6 +53,8 @@ update_package() (
   git push --force-with-lease "$remote" "$branch"
 
   if ! gh pr list --state open --head "$branch" --json number --jq 'length' | grep -qx '[1-9][0-9]*'; then
+    ensure_label "pkgs/$package" "f12f88" "Package update for $package"
+
     gh pr create \
       --base "$main_branch" \
       --head "$branch" \
