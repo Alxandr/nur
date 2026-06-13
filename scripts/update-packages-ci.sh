@@ -3,14 +3,16 @@ set -euo pipefail
 
 main_branch="${UPDATE_BASE_BRANCH:-main}"
 remote="${UPDATE_REMOTE:-origin}"
+git_user_name="${UPDATE_GIT_USER_NAME:-github-actions[bot]}"
+git_user_email="${UPDATE_GIT_USER_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
 
 if [[ -z "${GH_TOKEN:-}" ]]; then
   echo "GH_TOKEN is required" >&2
   exit 1
 fi
 
-git config user.name "github-actions[bot]"
-git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+git config user.name "$git_user_name"
+git config user.email "$git_user_email"
 
 git fetch "$remote" "$main_branch"
 base_ref="$remote/$main_branch"
