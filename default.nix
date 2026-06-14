@@ -14,7 +14,10 @@
 let
   inherit (pkgs) lib;
   hostSystem = pkgs.stdenv.hostPlatform.system;
-  nurLib = import ./lib { inherit pkgs; };
+  nurLib = import ./lib {
+    inherit pkgs;
+    packages = discoveredPackages;
+  };
 
   packageDirs = lib.filterAttrs (
     dirName: type: type == "directory" && builtins.pathExists (./pkgs + "/${dirName}/default.nix")
