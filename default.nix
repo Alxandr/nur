@@ -14,6 +14,7 @@
 let
   inherit (pkgs) lib;
   hostSystem = pkgs.stdenv.hostPlatform.system;
+  nurLib = import ./lib { inherit pkgs; };
 
   packageDirs = lib.filterAttrs (
     dirName: type: type == "directory" && builtins.pathExists (./pkgs + "/${dirName}/default.nix")
@@ -24,7 +25,13 @@ let
   candidatePackages = lib.mapAttrs' (
     dirName: _:
     let
-      pkg = lib.callPackageWith (pkgs // scopedPackages) (./pkgs + "/${dirName}") { };
+      pkg = lib.callPackageWith (
+        pkgs
+        // scopedPackages
+        // {
+          inherit (nurLib) nuget-global-tool-update-script;
+        }
+      ) (./pkgs + "/${dirName}") { };
     in
     lib.nameValuePair dirName pkg
   ) packageDirs;
@@ -42,7 +49,7 @@ let
   specialAttrs = {
     # The `lib`, `overlays`, `nixosModules`, `homeModules`,
     # `darwinModules` and `flakeModules` names are special
-    lib = import ./lib { inherit pkgs; }; # functions
+    lib = nurLib; # functions
     nixosModules = import ./nixos-modules; # NixOS modules
     # homeModules = { }; # Home Manager modules
     # darwinModules = { }; # nix-darwin modules

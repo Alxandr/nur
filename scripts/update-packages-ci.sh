@@ -3,16 +3,64 @@ set -euo pipefail
 
 main_branch="${UPDATE_BASE_BRANCH:-main}"
 remote="${UPDATE_REMOTE:-origin}"
+local_mode=false
+packages=()
 
-if [[ -z "${GH_TOKEN:-}" ]]; then
-  echo "GH_TOKEN is required" >&2
-  exit 1
+usage() {
+  cat <<'EOF'
+Usage: update-packages-ci.sh [--local] [--only <package_name> ...]
+
+Options:
+  --local   Run package update scripts in the current worktree without
+            creating branches, commits, pushes, PRs, or resetting between
+            packages.
+  --only <package_name>
+            Update only the named package. Can be used multiple times.
+  -h, --help
+            Show this help.
+EOF
+}
+
+while (( $# > 0 )); do
+  case "$1" in
+    --local)
+      local_mode=true
+      ;;
+    --only)
+      if (( $# < 2 )); then
+        echo "--only requires a package name" >&2
+        usage >&2
+        exit 2
+      fi
+      packages+=("$2")
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+if ! $local_mode; then
+  if [[ -z "${GH_TOKEN:-}" ]]; then
+    echo "GH_TOKEN is required" >&2
+    exit 1
+  fi
+
+  git fetch "$remote" "$main_branch"
+  base_ref="$remote/$main_branch"
 fi
 
-git fetch "$remote" "$main_branch"
-base_ref="$remote/$main_branch"
-
-mapfile -t packages < <(nix-shell scripts/update.nix --arg list true)
+if (( ${#packages[@]} == 0 )); then
+  mapfile -t packages < <(nix-shell scripts/update.nix --arg list true)
+fi
 failed_packages=()
 
 ensure_label() {
@@ -28,6 +76,11 @@ update_package() (
 
   local package="$1"
   local branch="update/$package"
+
+  if $local_mode; then
+    nix-shell scripts/update.nix --argstr package "$package" --arg allow-dirty true
+    return 0
+  fi
 
   git switch -C "$main_branch" "$base_ref"
   git reset --hard "$base_ref"

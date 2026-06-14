@@ -2,7 +2,7 @@
   lib,
   buildDotnetGlobalTool,
   dotnetCorePackages,
-  nix-update-script,
+  nuget-global-tool-update-script,
 }:
 
 buildDotnetGlobalTool {
@@ -15,10 +15,7 @@ buildDotnetGlobalTool {
   dotnet-runtime = dotnetCorePackages.dotnet_10.runtime;
 
   passthru = {
-    updateScript = nix-update-script {
-      extraArgs = [
-      ];
-    };
+    updateScript = nuget-global-tool-update-script { };
   };
 
   meta = {
