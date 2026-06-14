@@ -3,6 +3,7 @@
   buildDotnetModule,
   fetchFromGitHub,
   dotnetCorePackages,
+  nix-update-script,
 }:
 
 buildDotnetModule (finalAttrs: {
@@ -21,6 +22,14 @@ buildDotnetModule (finalAttrs: {
   projectFile = [ "NugetMcpServer/NugetMcpServer.csproj" ];
   testProjectFile = [ "NugetMcpServer.Tests/NugetMcpServer.Tests.csproj" ];
   nugetDeps = ./deps.json;
+
+  passthru = {
+    updateScript = nix-update-script {
+      extraArgs = [
+        "--use-github-releases"
+      ];
+    };
+  };
 
   meta = {
     description = "MCP server for finding and inspecting NuGet packages";
