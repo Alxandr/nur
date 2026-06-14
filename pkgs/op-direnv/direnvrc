@@ -7,6 +7,7 @@ DIRENV_MIN_VERSION=2.21.3
 OP_MIN_VERSION=2.33.1
 
 _OP_DIRENV_LOG_PREFIX="op-direnv: "
+_OP_DIRENV_OP=${OP_DIRENV_OP:-@op@}
 
 _op_direnv_info() {
   log_status "${_OP_DIRENV_LOG_PREFIX}$*"
@@ -64,21 +65,21 @@ _op_direnv_preflight() {
     if ! _require_version bash "$BASH_VERSION" "$BASH_MIN_VERSION" ||
       # direnv stdlib defines $direnv
       ! _require_cmd_version "$direnv" "$DIRENV_MIN_VERSION" ||
-      ! _require_cmd_version op "$OP_MIN_VERSION"; then
+      ! _require_cmd_version "$_OP_DIRENV_OP" "$OP_MIN_VERSION"; then
       return 1
     fi
   fi
 }
 
 use_op() {
- if ! _nix_direnv_preflight; then
+  if ! _op_direnv_preflight; then
     return 1
   fi
 
   watch_file .env.op
   if [[ -f .env.op && ( ! -f .direnv/op.env || .env.op -nt .direnv/op.env ) ]]; then
     _op_direnv_info "Injecting secrets from op into .direnv/op.env"
-    cat .env.op | op inject >.direnv/op.env
+    "$_OP_DIRENV_OP" inject <.env.op >.direnv/op.env
   fi
 
   [[ -f .direnv/op.env ]] && dotenv .direnv/op.env

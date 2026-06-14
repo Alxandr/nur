@@ -1,4 +1,5 @@
 {
+  lib,
   buildDotnetModule,
   fetchFromGitHub,
   dotnetCorePackages,
@@ -20,4 +21,11 @@ buildDotnetModule (finalAttrs: {
   projectFile = [ "NugetMcpServer/NugetMcpServer.csproj" ];
   testProjectFile = [ "NugetMcpServer.Tests/NugetMcpServer.Tests.csproj" ];
   nugetDeps = ./deps.json;
+
+  meta = {
+    description = "MCP server for finding and inspecting NuGet packages";
+    homepage = "https://github.com/DimonSmart/NugetMcpServer";
+    license = lib.licenses.unlicense;
+    mainProgram = "NugetMcpServer";
+  };
 })
