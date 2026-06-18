@@ -22,13 +22,8 @@ buildDotnetModule (finalAttrs: {
   projectFile = [ "src/Verify.Terminal/Verify.Terminal.csproj" ];
   testProjectFile = [ "src/Verify.Terminal.Tests/Verify.Terminal.Tests.csproj" ];
   nugetDeps = ./deps.json;
-  dotnetRestoreFlags = [
-    "-f"
-    "net10.0"
-  ];
-  dotnetInstallFlags = [
-    "-f"
-    "net10.0"
+  dotnetFlags = [
+    "-p:TargetFramework=net10.0"
   ];
 
   postFixup = ''
