@@ -7,26 +7,15 @@
 # commands such as:
 #     nix-build -A mypackage
 
-let
-  lock = builtins.fromJSON (builtins.readFile ./flake.lock);
-  crate2nix = builtins.fetchTarball {
-    url = "https://github.com/nix-community/crate2nix/archive/${lock.nodes.crate2nix.locked.rev}.tar.gz";
-    sha256 = lock.nodes.crate2nix.locked.narHash;
-  };
-
-in
 {
   pkgs ? import <nixpkgs> { },
-
-  # Not expected to be passed in by users
-  crate2nixTools ? import "${crate2nix}/tools.nix" { inherit pkgs; },
 }:
 
 let
   inherit (pkgs) lib;
   hostSystem = pkgs.stdenv.hostPlatform.system;
   nurLib = import ./lib {
-    inherit pkgs crate2nixTools;
+    inherit pkgs;
     packages = discoveredPackages;
   };
 
