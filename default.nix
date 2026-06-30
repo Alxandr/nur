@@ -44,7 +44,7 @@ let
         // scopedPackages
         // {
           inherit nurLib;
-          inherit (nurLib) nuget-global-tool-update-script;
+          inherit (nurLib) crate2nix-package-update-script nuget-global-tool-update-script;
         }
       ) (./pkgs + "/${dirName}") { };
     in

@@ -3,7 +3,7 @@
   nurLib,
   nixVersions,
   fetchFromGitHub,
-  nix-update-script,
+  crate2nix-package-update-script,
 }:
 
 let
@@ -42,14 +42,10 @@ cargoNix.workspaceMembers.nil.build.overrideAttrs {
       version = "0.0.0"; # nix-update requires a version - given that we use git commits, the value does not really matter
     };
 
-    updateScript = nix-update-script {
-      attrPath = "nil.updateSource";
+    updateScript = crate2nix-package-update-script {
       extraArgs = [
         "--version"
         "branch"
-        "--override-filename"
-        "pkgs/nil/default.nix"
-        "--src-only"
       ];
     };
   };

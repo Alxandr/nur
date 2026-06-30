@@ -10,5 +10,15 @@ let
 in
 {
   inherit (crate2nixTools) generatedCargoNix;
-  nuget-global-tool-update-script = { }: [ (lib.getExe packages.update-nuget-global-tool) ];
+  crate2nix-package-update-script =
+    {
+      extraArgs ? [ ],
+    }:
+    [ (lib.getExe packages.update-crate2nix-package) ] ++ extraArgs;
+
+  nuget-global-tool-update-script =
+    {
+      extraArgs ? [ ],
+    }:
+    [ (lib.getExe packages.update-nuget-global-tool) ] ++ extraArgs;
 }
