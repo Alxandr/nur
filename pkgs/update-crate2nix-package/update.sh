@@ -114,11 +114,19 @@ if [[ -z "$attr" ]]; then
 	exit 2
 fi
 
+abspath() {
+	if [[ "$1" = /* ]]; then
+		printf '%s\n' "$1"
+	else
+		realpath -m "$1"
+	fi
+}
+
 sourceAttr="$attr.updateSource"
 
 if [[ -z "$output" ]]; then
 	if [[ -n "$overrideFilename" ]]; then
-		output="$(dirname "$overrideFilename")/Cargo.nix"
+		output="$(dirname "$overrideFilename")/Cargo.json"
 	else
 		sourceFile=$(
 			nix --extra-experimental-features nix-command eval \
@@ -155,7 +163,7 @@ if [[ -z "$output" ]]; then
 			;;
 		esac
 
-		output="$(dirname "$sourceFile")/Cargo.nix"
+		output="$(dirname "$sourceFile")/Cargo.json"
 	fi
 fi
 
@@ -177,10 +185,35 @@ src=$(
 		--no-out-link
 )
 
+output=$(abspath "$output")
+mkdir -p "$(dirname "$output")"
+
+if [[ -n "$crateHashes" ]]; then
+	crateHashes=$(abspath "$crateHashes")
+fi
+
+if [[ -n "$registryHashes" ]]; then
+	registryHashes=$(abspath "$registryHashes")
+fi
+
+tmpDir=$(mktemp -d)
+cleanup() {
+	rm -rf "$tmpDir"
+}
+trap cleanup EXIT
+
+tmpSrc="$tmpDir/source"
+tmpOutput="$tmpSrc/$(basename "$output")"
+
+mkdir -p "$tmpSrc"
+cp -a "$src/." "$tmpSrc/"
+chmod -R u+w "$tmpSrc"
+
 generateArgs=(
 	generate
-	--cargo-toml "$src/$cargoToml"
-	--output "$output"
+	--cargo-toml "$cargoToml"
+	--output "$tmpOutput"
+	--format json
 )
 
 if [[ -n "$crateHashes" ]]; then
@@ -192,5 +225,10 @@ if [[ -n "$registryHashes" ]]; then
 fi
 
 generateArgs+=("${crate2nixArgs[@]}")
+(
+	cd "$tmpSrc"
+	crate2nix "${generateArgs[@]}"
+)
 
-crate2nix "${generateArgs[@]}"
+cp "$tmpOutput" "$output"
+echo "Updated $output"

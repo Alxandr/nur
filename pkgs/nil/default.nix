@@ -26,24 +26,25 @@ let
       };
     };
 
-  cargoNix = pkgs.callPackage ./Cargo.nix {
-    buildRustCrateForPkgs = customBuildRustCrateForPkgs;
-  };
-
 in
-cargoNix.workspaceMembers.nil.build.overrideAttrs (finalAttrs: {
-  passthru = (finalAttrs.passthru or { }) // {
-    updateSource = crate2nix-package-update-script.mkUpdateSource {
-      inherit src;
-      name = "nil";
-      version = "2025-06-13-unstable-2025-12-10"; # nix-update requires a version - given that we use git commits, the value does not really matter
-    };
+nurLib.crate2nix {
+  inherit src;
+  pname = "nil";
+  resolvedJson = ./Cargo.json;
+  buildRustCrateForPkgs = customBuildRustCrateForPkgs;
 
-    updateScript = crate2nix-package-update-script {
-      extraArgs = [
-        "--version"
-        "branch"
-      ];
-    };
+  updateScriptExtraArgs = [
+    "--version"
+    "branch"
+  ];
+
+  meta = {
+    description = "NIx Language server, an incremental analysis assistant for writing in Nix.";
+    mainProgram = "nil";
+    homepage = "https://github.com/oxalica/nil";
+    license = [
+      pkgs.lib.licenses.mit
+      pkgs.lib.licenses.asl20
+    ];
   };
-})
+}
