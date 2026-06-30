@@ -14,24 +14,25 @@ let
     hash = "sha256-2577vxyoBa8+ZRiXr3CuPtOuEtPRYsFPSZuEc/KI/80=";
   };
 
-  crate2nix = import "${src}/default.nix" {
-    inherit pkgs;
-  };
-
 in
-crate2nix.overrideAttrs (finalAttrs: {
-  passthru = (finalAttrs.passthru or { }) // {
-    updateSource = crate2nix-package-update-script.mkUpdateSource {
-      inherit src;
-      name = "crate2nix";
-      version = "0.0.0"; # nix-update requires a version - given that we use git commits, the value does not really matter
-    };
+nurLib.crate2nix {
+  inherit src;
+  pname = "crate2nix";
+  resolvedJson = ./Cargo.json;
+  buildRustCrateForPkgs = pkgs: pkgs.buildRustCrate;
 
-    updateScript = crate2nix-package-update-script {
-      extraArgs = [
-        "--version"
-        "branch"
-      ];
-    };
+  updateScriptExtraArgs = [
+    "--version"
+    "branch"
+  ];
+
+  meta = {
+    description = "A tool to generate Nix expressions for Rust crates";
+    mainProgram = "crate2nix";
+    homepage = "https://github.com/nix-community/crate2nix";
+    license = [
+      pkgs.lib.licenses.mit
+      pkgs.lib.licenses.asl20
+    ];
   };
-})
+}

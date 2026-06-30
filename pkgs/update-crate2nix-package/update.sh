@@ -205,6 +205,7 @@ trap cleanup EXIT
 tmpSrc="$tmpDir/source"
 tmpOutput="$tmpSrc/$(basename "$output")"
 
+set -x
 mkdir -p "$tmpSrc"
 cp -a "$src/." "$tmpSrc/"
 chmod -R u+w "$tmpSrc"
