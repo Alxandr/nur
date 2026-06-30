@@ -14,7 +14,7 @@ let
     hash = "sha256-2577vxyoBa8+ZRiXr3CuPtOuEtPRYsFPSZuEc/KI/80=";
   };
 
-  crate2nix = import src {
+  crate2nix = import "${src}/default.nix" {
     inherit pkgs;
   };
 
