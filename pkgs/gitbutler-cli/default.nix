@@ -50,15 +50,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
   dontCargoCheck = true; # Who cares about tests?
   cargoBuildFlags = cargoFlags;
 
-  env = {
-    OPENSSL_NO_VENDOR = true;
-    # LIBGIT2_NO_VENDOR is intentionally not set: nixos-stable (26.05) ships
-    # libgit2 1.9.3, but libgit2-sys 0.18.5 requires >= 1.9.4. Without this
-    # variable, libgit2-sys tries the system library first and falls back to its
-    # bundled C source when the system version doesn't satisfy the constraint.
-    # On newer nixpkgs channels that carry libgit2 >= 1.9.4 the system library
-    # is still preferred automatically.
-  };
+  env =
+    {
+      OPENSSL_NO_VENDOR = true;
+    }
+    // lib.optionalAttrs (lib.versionAtLeast libgit2.version "1.9.4") {
+      LIBGIT2_NO_VENDOR = 1;
+    };
 
   passthru = {
     updateScript = nix-update-script {
