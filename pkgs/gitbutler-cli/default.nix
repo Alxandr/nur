@@ -19,6 +19,10 @@ let
     "but"
   ];
 
+  libgit2Experimental = libgit2.override {
+    withExperimentalSha256 = true;
+  };
+
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "gitbutler-cli";
@@ -39,7 +43,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   buildInputs = [
-    libgit2
+    libgit2Experimental
     openssl
     glib
     dbus
@@ -53,8 +57,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
   env =
     {
       OPENSSL_NO_VENDOR = true;
+      VERSION = finalAttrs.version;
     }
-    // lib.optionalAttrs (lib.versionAtLeast libgit2.version "1.9.4") {
+    // lib.optionalAttrs (lib.versionAtLeast libgit2Experimental.version "1.9.4") {
       LIBGIT2_NO_VENDOR = 1;
     };
 
