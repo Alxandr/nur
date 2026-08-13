@@ -20,10 +20,10 @@ rec {
       meta,
       # Workspace source root (must match the workspace that generated the JSON)
       src,
-      # Source derivation updated by nix-update (defaults to the build source)
-      updateSrc ? src,
       # Path to the pre-resolved JSON file
       resolvedJson,
+      # Path where the updater writes regenerated JSON (defaults to the build input)
+      updateResolvedJson ? resolvedJson,
       # Optional: function to create buildRustCrate for a given pkgs
       buildRustCrateForPkgs ? pkgs: pkgs.buildRustCrate,
       # Optional: default crate overrides
@@ -59,7 +59,6 @@ rec {
             attrs
             // {
               name = pname;
-              src = updateSrc;
               version = finalAttrs.version;
             }
           );
@@ -67,7 +66,7 @@ rec {
           updateScript = crate2nix-package-update-script {
             extraArgs = [
               "--output"
-              (toString resolvedJson)
+              (toString updateResolvedJson)
             ]
             ++ updateScriptExtraArgs;
           };
