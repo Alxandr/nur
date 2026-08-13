@@ -38,6 +38,11 @@ let
       ];
     };
 
+    # Matches GitButler's [profile.dev.package] override, inherited by tests.
+    gix-merge = previousAttrs: {
+      extraRustcOpts = (previousAttrs.extraRustcOpts or [ ]) ++ [ "-C debug-assertions=no" ];
+    };
+
     openssl-sys =
       previousAttrs:
       (pkgs.defaultCrateOverrides.openssl-sys previousAttrs)
@@ -70,6 +75,37 @@ nurLib.crate2nix {
   workspaceMember = "but";
   versionOverride = version;
   resolvedJson = ./Cargo.json;
+  testInputs = [ pkgs.git ];
+  testEnvironment.SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+
+  # These suites rely on Git repositories or build layouts unavailable in the
+  # Nix sandbox. Keep this list aligned with nixpkgs' GitButler package.
+  disabledTestCrates = [
+    "but-core"
+    "but-rebase"
+    "but-workspace"
+    "but-hunk-dependency"
+    "gitbutler-branch-actions"
+    "gitbutler-stack"
+    "gitbutler-edit-mode"
+    "gitbutler-operating-modes"
+    "gitbutler-project"
+    "but-cherry-apply"
+    "but-worktrees"
+  ];
+
+  checkFlags = lib.concatMap (test: [ "--skip=${test}" ]) [
+    "test_is_network_error"
+    "git_editor_takes_precedence"
+    "migrations_in_parallel_with_processes"
+    "pre_push_ignores_husky_core_hooks_path_when_disabled"
+    "merge_first_branch_into_gb_local_and_verify_rebase"
+    "json_output_with_dangling_commits"
+    "two_dangling_commits_different_branches"
+    "new_from_project_handle_uses_repo_gitdir"
+    "new_from_project_handle_keeps_repo_cached"
+    "track_directory_changes_after_rename"
+  ];
 
   updateScriptExtraArgs = [
     "--use-github-releases"

@@ -25,6 +25,16 @@ let
     pname = "crate2nix";
     resolvedJson = ./Cargo.json;
     buildRustCrateForPkgs = pkgs: pkgs.buildRustCrate;
+    testInputs = [
+      cargo
+      nix
+      nix-prefetch-git
+    ];
+    checkFlags = lib.concatMap (test: [ "--skip=${test}" ]) [
+      # Requires network access and a configured Nix/Cargo environment.
+      "pregenerated_up_to_date"
+      "self_up_to_date"
+    ];
 
     updateScriptExtraArgs = [
       "--version"
