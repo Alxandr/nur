@@ -5,6 +5,7 @@ overrideFilename=""
 crateHashes=""
 registryHashes=""
 nixUpdateVersion="branch"
+nixUpdateArgsExtra=()
 crate2nixArgs=()
 
 usage() {
@@ -28,6 +29,10 @@ Options:
         Path to crate2nix registry hash cache file.
 --version <version>
         Version argument passed to nix-update. Defaults to "branch".
+--use-github-releases
+        Ask nix-update to determine the version from GitHub releases.
+--version-regex <regex>
+        Version regular expression passed to nix-update.
 -h, --help
         Show this help.
 
@@ -89,6 +94,18 @@ while (($# > 0)); do
 			exit 2
 		fi
 		nixUpdateVersion="$2"
+		shift
+		;;
+	--use-github-releases)
+		nixUpdateArgsExtra+=("$1")
+		;;
+	--version-regex)
+		if (($# < 2)); then
+			echo "--version-regex requires a value" >&2
+			usage >&2
+			exit 2
+		fi
+		nixUpdateArgsExtra+=("$1" "$2")
 		shift
 		;;
 	-h | --help)
@@ -172,6 +189,7 @@ nixUpdateArgs=(
 	"--version" "$nixUpdateVersion"
 	"--src-only"
 )
+nixUpdateArgs+=("${nixUpdateArgsExtra[@]}")
 
 if [[ -n "$overrideFilename" ]]; then
 	nixUpdateArgs+=("--override-filename" "$overrideFilename")

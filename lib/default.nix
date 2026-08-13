@@ -12,10 +12,16 @@ rec {
     attrs@{
       # Package name
       pname,
+      # Cargo workspace member name (defaults to the package name)
+      workspaceMember ? pname,
+      # Optional package version override (defaults to the Cargo version)
+      version ? null,
       # Package meta
       meta,
       # Workspace source root (must match the workspace that generated the JSON)
       src,
+      # Source derivation updated by nix-update (defaults to the build source)
+      updateSrc ? src,
       # Path to the pre-resolved JSON file
       resolvedJson,
       # Optional: function to create buildRustCrate for a given pkgs
@@ -34,16 +40,18 @@ rec {
           defaultCrateOverrides
           ;
       };
-      pkg = cargoNix.workspaceMembers.${pname}.build;
+      pkg = cargoNix.workspaceMembers.${workspaceMember}.build;
     in
     pkg.overrideAttrs (
       finalAttrs: previousAttrs:
       let
-        version = lib.strings.removePrefix "rust_${pname}-" previousAttrs.name;
+        cargoVersion = lib.strings.removePrefix "rust_${workspaceMember}-" previousAttrs.name;
+        packageVersion = if version == null then cargoVersion else version;
       in
       {
-        inherit pname version;
-        name = "${pname}-${version}";
+        inherit pname;
+        version = packageVersion;
+        name = "${pname}-${packageVersion}";
         meta = (previousAttrs.meta or { }) // meta;
 
         passthru = (previousAttrs.passthru or { }) // {
@@ -51,6 +59,7 @@ rec {
             attrs
             // {
               name = pname;
+              src = updateSrc;
               version = finalAttrs.version;
             }
           );
