@@ -28,15 +28,27 @@ rec {
       defaultCrateOverrides ? pkgs.defaultCrateOverrides,
       # Optional: extra arguments to pass to the update script
       updateScriptExtraArgs ? [ ],
+      # Optional: use mold linker
+      useMoldLinker ? true,
     }:
     let
       cargoNix = pkgs.callPackage ./crate2nix.nix {
         inherit
           src
           resolvedJson
-          buildRustCrateForPkgs
           defaultCrateOverrides
           ;
+        buildRustCrateForPkgs =
+          cratePkgs:
+          let
+            buildRustCrate = buildRustCrateForPkgs cratePkgs;
+          in
+          if useMoldLinker then
+            buildRustCrate.override {
+              stdenv = cratePkgs.stdenvAdapters.useMoldLinker cratePkgs.stdenv;
+            }
+          else
+            buildRustCrate;
       };
       resolved = cargoNix.resolved;
       dependencyPackageIdsFor =
