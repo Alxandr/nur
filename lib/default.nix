@@ -38,7 +38,50 @@ rec {
           defaultCrateOverrides
           ;
       };
+      resolved = cargoNix.resolved;
+      dependencyPackageIdsFor =
+        {
+          rootPackageId,
+          includeDevDependencies ? false,
+        }:
+        let
+          closure = builtins.genericClosure {
+            startSet = [
+              { key = rootPackageId; }
+            ];
+
+            operator =
+              node:
+              let
+                crateInfo = resolved.crates.${node.key};
+                dependencies =
+                  (crateInfo.dependencies or [ ])
+                  ++ (crateInfo.buildDependencies or [ ])
+                  ++ lib.optionals (includeDevDependencies && node.key == rootPackageId) (
+                    crateInfo.devDependencies or [ ]
+                  );
+              in
+              map (dependency: { key = dependency.packageId; }) dependencies;
+          };
+        in
+        map (node: node.key) (builtins.filter (node: node.key != rootPackageId) closure);
+      workspaceDependenciesFor =
+        rootPackageId:
+        let
+          dependencyPackageIds = dependencyPackageIdsFor { inherit rootPackageId; };
+        in
+        lib.filterAttrs (
+          _workspaceName: packageId: builtins.elem packageId dependencyPackageIds
+        ) resolved.workspaceMembers;
+      workspaceDependencies = workspaceDependenciesFor resolved.workspaceMembers.${workspaceMember};
       pkg = cargoNix.workspaceMembers.${workspaceMember}.buildBins;
+
+      allTestMembers = [
+        cargoNix.workspaceMembers.${workspaceMember}.buildTests
+      ]
+      ++ lib.mapAttrsToList (
+        name: _packageId: cargoNix.workspaceMembers.${name}.buildTests
+      ) workspaceDependencies;
     in
     pkg.overrideAttrs (
       finalAttrs: previousAttrs:
@@ -50,6 +93,8 @@ rec {
         inherit pname version;
         name = "${pname}-${version}";
         meta = (previousAttrs.meta or { }) // meta;
+
+        nativeBuildInputs = (previousAttrs.nativeBuildInputs or [ ]) ++ allTestMembers;
 
         passthru = (previousAttrs.passthru or { }) // {
           updateSource = crate2nix-package-update-script.mkUpdateSource (
