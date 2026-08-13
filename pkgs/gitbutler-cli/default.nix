@@ -19,25 +19,6 @@ let
     hash = "sha256-iiUgqpoLixyBG+MKQZBQbt4aCsRPrM8lPmwJHReAgPk=";
   };
 
-  rawResolved = builtins.fromJSON (builtins.readFile ./Cargo.json);
-
-  resolvedJson = builtins.toFile "gitbutler-${version}-Cargo.json" (
-    builtins.toJSON (
-      rawResolved
-      // {
-        crates = lib.mapAttrs (
-          packageId: crateInfo:
-          crateInfo
-          // {
-            # The vendored builder compiles every declared binary. Cargo only
-            # builds binaries for the selected workspace package here.
-            crateBin = if packageId == rawResolved.workspaceMembers.but then crateInfo.crateBin or [ ] else [ ];
-          }
-        ) rawResolved.crates;
-      }
-    )
-  );
-
   libgit2Experimental = libgit2.override {
     withExperimentalSha256 = true;
   };
@@ -83,13 +64,12 @@ in
 nurLib.crate2nix {
   inherit
     src
-    version
     defaultCrateOverrides
-    resolvedJson
     ;
   pname = "gitbutler-cli";
   workspaceMember = "but";
-  updateResolvedJson = ./Cargo.json;
+  versionOverride = version;
+  resolvedJson = ./Cargo.json;
 
   updateScriptExtraArgs = [
     "--use-github-releases"

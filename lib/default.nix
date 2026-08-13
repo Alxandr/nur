@@ -15,15 +15,13 @@ rec {
       # Cargo workspace member name (defaults to the package name)
       workspaceMember ? pname,
       # Optional package version override (defaults to the Cargo version)
-      version ? null,
+      versionOverride ? null,
       # Package meta
       meta,
       # Workspace source root (must match the workspace that generated the JSON)
       src,
       # Path to the pre-resolved JSON file
       resolvedJson,
-      # Path where the updater writes regenerated JSON (defaults to the build input)
-      updateResolvedJson ? resolvedJson,
       # Optional: function to create buildRustCrate for a given pkgs
       buildRustCrateForPkgs ? pkgs: pkgs.buildRustCrate,
       # Optional: default crate overrides
@@ -40,18 +38,17 @@ rec {
           defaultCrateOverrides
           ;
       };
-      pkg = cargoNix.workspaceMembers.${workspaceMember}.build;
+      pkg = cargoNix.workspaceMembers.${workspaceMember}.buildBins;
     in
     pkg.overrideAttrs (
       finalAttrs: previousAttrs:
       let
         cargoVersion = lib.strings.removePrefix "rust_${workspaceMember}-" previousAttrs.name;
-        packageVersion = if version == null then cargoVersion else version;
+        version = if versionOverride == null then cargoVersion else versionOverride;
       in
       {
-        inherit pname;
-        version = packageVersion;
-        name = "${pname}-${packageVersion}";
+        inherit pname version;
+        name = "${pname}-${version}";
         meta = (previousAttrs.meta or { }) // meta;
 
         passthru = (previousAttrs.passthru or { }) // {
@@ -66,7 +63,7 @@ rec {
           updateScript = crate2nix-package-update-script {
             extraArgs = [
               "--output"
-              (toString updateResolvedJson)
+              (toString resolvedJson)
             ]
             ++ updateScriptExtraArgs;
           };
