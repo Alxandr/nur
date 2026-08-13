@@ -336,6 +336,7 @@ let
 
             # Cargo env vars
             CARGO = lib.getExe cratePkgs.cargo;
+            CARGO_CRATE_NAME = crateInfo.crateName;
           }
           // lib.optionalAttrs buildTests {
             buildTests = true;

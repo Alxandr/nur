@@ -50,10 +50,6 @@ let
         OPENSSL_NO_VENDOR = true;
       };
 
-    rmcp = previousAttrs: {
-      CARGO_CRATE_NAME = "rmcp";
-    };
-
     tauri = previousAttrs: {
       postInstall = (previousAttrs.postInstall or "") + ''
         # Tauri uses ':' in some Cargo metadata keys. buildRustCrate writes
