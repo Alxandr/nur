@@ -78,8 +78,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
       --fish <($out/bin/but completions fish) \
       --zsh <($out/bin/but completions zsh)
 
-    mkdir -p "$skill/share/agents/skills/but"
-    $out/bin/but skill install --path "$skill/share/agents/skills/but"
+    mkdir -p "$skill"
+    $out/bin/but skill install --path "$skill"
   '';
 
   passthru = {
