@@ -22,13 +22,9 @@ buildDotnetModule (finalAttrs: {
   nugetDeps = ./deps.json;
 
   dotnet-sdk = dotnetCorePackages.sdk_10_0;
-  dotnet-runtime = dotnetCorePackages.aspnetcore_10_0;
+  dotnet-runtime = dotnetCorePackages.aspnetcore_8_0;
   runtimeId = "linux-x64";
   selfContainedBuild = false;
-
-  dotnetFlags = [
-    "-p:TargetFramework=net10.0"
-  ];
 
   executables = [ "Aspire.Dashboard" ];
 
