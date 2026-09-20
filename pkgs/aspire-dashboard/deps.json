@@ -97,15 +97,15 @@
   },
   {
     "pname": "Microsoft.AspNetCore.App.Ref",
-    "version": "8.0.31",
-    "hash": "sha256-vMnNfXlEkZq5fpys8z5SnCn9q/BYXLw+CXcEdGeD6hg=",
-    "url": "https://pkgs.dev.azure.com/dnceng/9ee6d478-d288-47f7-aacc-f6e6d082ae6d/_packaging/45bacae2-5efb-47c8-91e5-8ec20c22b4f8/nuget/v3/flat2/microsoft.aspnetcore.app.ref/8.0.31/microsoft.aspnetcore.app.ref.8.0.31.nupkg"
+    "version": "10.0.11",
+    "hash": "sha256-WyWIrEF5LXb9N9N3jBM4BbIktuBkBDJ8mKZsY3uVjTQ=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.app.ref/10.0.11/microsoft.aspnetcore.app.ref.10.0.11.nupkg"
   },
   {
     "pname": "Microsoft.AspNetCore.App.Runtime.linux-x64",
-    "version": "8.0.31",
-    "hash": "sha256-0sAwUHBaAhI2vIRlSD/HtNBrJHa132JTzfnWIDaPJXY=",
-    "url": "https://pkgs.dev.azure.com/dnceng/9ee6d478-d288-47f7-aacc-f6e6d082ae6d/_packaging/45bacae2-5efb-47c8-91e5-8ec20c22b4f8/nuget/v3/flat2/microsoft.aspnetcore.app.runtime.linux-x64/8.0.31/microsoft.aspnetcore.app.runtime.linux-x64.8.0.31.nupkg"
+    "version": "10.0.11",
+    "hash": "sha256-4sblERXNZUJ1IirnCXFYe9lRQzbC+UiRCidP/NAE55E=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.app.runtime.linux-x64/10.0.11/microsoft.aspnetcore.app.runtime.linux-x64.10.0.11.nupkg"
   },
   {
     "pname": "Microsoft.AspNetCore.Authentication.Certificate",
@@ -235,21 +235,21 @@
   },
   {
     "pname": "Microsoft.NETCore.App.Host.linux-x64",
-    "version": "8.0.31",
-    "hash": "sha256-MGH8ZnjM4fZFp63mbLNpkojI2T7TvpvNgvpjOGfrTIE=",
-    "url": "https://pkgs.dev.azure.com/dnceng/9ee6d478-d288-47f7-aacc-f6e6d082ae6d/_packaging/45bacae2-5efb-47c8-91e5-8ec20c22b4f8/nuget/v3/flat2/microsoft.netcore.app.host.linux-x64/8.0.31/microsoft.netcore.app.host.linux-x64.8.0.31.nupkg"
+    "version": "10.0.11",
+    "hash": "sha256-1MzcRWvuUoZfkIupm+bJnHeLrWX4UcUfji/fYvY0gZU=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.host.linux-x64/10.0.11/microsoft.netcore.app.host.linux-x64.10.0.11.nupkg"
   },
   {
     "pname": "Microsoft.NETCore.App.Ref",
-    "version": "8.0.31",
-    "hash": "sha256-oChiwq8Hnb0R+Fx61PlO1VMFUw4M8Gcd4nnxoSlPIMY=",
-    "url": "https://pkgs.dev.azure.com/dnceng/9ee6d478-d288-47f7-aacc-f6e6d082ae6d/_packaging/45bacae2-5efb-47c8-91e5-8ec20c22b4f8/nuget/v3/flat2/microsoft.netcore.app.ref/8.0.31/microsoft.netcore.app.ref.8.0.31.nupkg"
+    "version": "10.0.11",
+    "hash": "sha256-42PO6+UIRWFWZ5ZQzLiKa2vDjokmRRHGVRN/xcKh16c=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.ref/10.0.11/microsoft.netcore.app.ref.10.0.11.nupkg"
   },
   {
     "pname": "Microsoft.NETCore.App.Runtime.linux-x64",
-    "version": "8.0.31",
-    "hash": "sha256-J6iRM18YDWcyxaU7SEd5B1O276obx8P4FAE6qWjWqjY=",
-    "url": "https://pkgs.dev.azure.com/dnceng/9ee6d478-d288-47f7-aacc-f6e6d082ae6d/_packaging/45bacae2-5efb-47c8-91e5-8ec20c22b4f8/nuget/v3/flat2/microsoft.netcore.app.runtime.linux-x64/8.0.31/microsoft.netcore.app.runtime.linux-x64.8.0.31.nupkg"
+    "version": "10.0.11",
+    "hash": "sha256-3sEsS07V0nOWaSQ3VkkwkLsPewE6M6DrhOx3QoqKsco=",
+    "url": "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.runtime.linux-x64/10.0.11/microsoft.netcore.app.runtime.linux-x64.10.0.11.nupkg"
   },
   {
     "pname": "Microsoft.Win32.SystemEvents",
