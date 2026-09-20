@@ -22,7 +22,7 @@ buildDotnetModule (finalAttrs: {
   nugetDeps = ./deps.json;
 
   dotnet-sdk = dotnetCorePackages.sdk_10_0;
-  dotnet-runtime = dotnetCorePackages.sdk_10_0;
+  dotnet-runtime = dotnetCorePackages.aspnetcore_10_0;
   runtimeId = "linux-x64";
   selfContainedBuild = false;
 
