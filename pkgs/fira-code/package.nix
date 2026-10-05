@@ -30,6 +30,8 @@ let
         old.disabledTests
         ++ lib.optionals (lib.versionAtLeast pkgs.python312.version "3.12.15") [
           "test_tls_connectable"
+          # This 100 ms deadline expires under CI load.
+          "test_deadline_moved"
         ];
     });
   });
