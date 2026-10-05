@@ -23,7 +23,7 @@ let
     ];
   };
 
-  // https://github.com/NixOS/nixpkgs/issues/570271
+  # https://github.com/NixOS/nixpkgs/issues/570271
   python312Packages = pkgs.python312Packages.overrideScope (_: prev: {
     anyio = prev.anyio.overridePythonAttrs (_: {
       doCheck = false;
