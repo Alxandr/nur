@@ -24,17 +24,25 @@ let
   };
 
   # https://github.com/NixOS/nixpkgs/issues/570271
-  python312Packages = pkgs.python312Packages.overrideScope (_: prev: {
-    anyio = prev.anyio.overridePythonAttrs (old: {
-      disabledTests =
-        old.disabledTests
-        ++ lib.optionals (lib.versionAtLeast pkgs.python312.version "3.12.15") [
-          "test_tls_connectable"
-          # This 100 ms deadline expires under CI load.
-          "test_deadline_moved"
-        ];
-    });
-  });
+  # Override the interpreter so gftools' python.withPackages environments also
+  # use the workaround. Overriding only the package scope leaves those unchanged.
+  python312 = pkgs.python312.override {
+    self = python312;
+    packageOverrides = lib.composeExtensions (pkgs.python312.packageOverrides or (_: _: { })) (
+      _: prev: {
+        anyio = prev.anyio.overridePythonAttrs (old: {
+          disabledTests =
+            (old.disabledTests or [ ])
+            ++ lib.optionals (lib.versionAtLeast pkgs.python312.version "3.12.15") [
+              "test_tls_connectable"
+              # This 100 ms deadline expires under CI load.
+              "test_deadline_moved"
+            ];
+        });
+      }
+    );
+  };
+  python312Packages = python312.pkgs;
 
   meta = {
     description = "Monospaced font with programming ligatures";
