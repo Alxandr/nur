@@ -25,8 +25,12 @@ let
 
   # https://github.com/NixOS/nixpkgs/issues/570271
   python312Packages = pkgs.python312Packages.overrideScope (_: prev: {
-    anyio = prev.anyio.overridePythonAttrs (_: {
-      doCheck = false;
+    anyio = prev.anyio.overridePythonAttrs (old: {
+      disabledTests =
+        old.disabledTests
+        ++ lib.optionals (lib.versionAtLeast pkgs.python312.version "3.12.15") [
+          "test_tls_connectable"
+        ];
     });
   });
 
