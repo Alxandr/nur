@@ -23,6 +23,12 @@ let
     ];
   };
 
+  python312Packages = pkgs.python312Packages.overrideScope (_: prev: {
+    anyio = prev.anyio.overridePythonAttrs (_: {
+      doCheck = false;
+    });
+  });
+
   meta = {
     description = "Monospaced font with programming ligatures";
     homepage = "https://github.com/tonsky/FiraCode";
@@ -33,8 +39,10 @@ in
 if useVariableFont then
   pkgs.callPackage ./vf.nix {
     inherit meta src updateScript;
+    inherit (python312Packages) fontmake gftools;
   }
 else
   pkgs.callPackage ./ttf.nix {
     inherit meta src updateScript;
+    inherit (python312Packages) fontmake;
   }
