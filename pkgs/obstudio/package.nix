@@ -79,7 +79,7 @@ buildGoModule {
     runHook preInstallCheck
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
-    export PORT=18888 OTLP_HTTP_PORT=18889 OTLP_GRPC_PORT=18890
+    export OBSTUDIO_PORT=18888 OTLP_HTTP_PORT=18889 OTLP_GRPC_PORT=18890
     "$out/bin/obstudio" >obstudio.log 2>&1 &
     obstudioPid=$!
     trap 'kill "$obstudioPid" 2>/dev/null || true' EXIT
