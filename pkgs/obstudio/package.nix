@@ -11,18 +11,18 @@
 }:
 
 let
-  version = "0.1.2";
+  version = "0.1.3";
   src = fetchFromGitHub {
     owner = "signalfx";
     repo = "obstudio";
     tag = "v${version}";
-    hash = "sha256-dfsFV7FcfHzLFV/s71eccDG8e+HNfYNoK/s8ogurEds=";
+    hash = "sha256-CU7N/fghIGpX2tavAe7CBgPTTnbQN+HewOH1eL88xVI=";
   };
   client = buildNpmPackage {
     pname = "obstudio-client";
     inherit version src;
     sourceRoot = "source/observer/client";
-    npmDepsHash = "sha256-rtr/NbNzBXD9ZVKK6wXrQfH++GBC8BZPXx55ny/YjeE=";
+    npmDepsHash = "sha256-e5ATjQxkI+/DST9q0D1MXPfgYVurPQWWRPLE8lwgVNc=";
     npmBuildFlags = [
       "--"
       "--outdir"
@@ -39,7 +39,7 @@ buildGoModule {
   pname = "obstudio";
   inherit version src;
   modRoot = "observer";
-  vendorHash = "sha256-ubighP8NTlf9gSMRvsdtYVyi6zj3njk53m21iyGZSZk=";
+  vendorHash = "sha256-qMkwIZla2X61jzM5gy/Yd6aM4evL4UKHSJOjq2glZNw=";
   subPackages = [ "cmd/obstudio" ];
 
   nativeBuildInputs = [ makeWrapper ];
