@@ -1,11 +1,15 @@
 {
   lib,
   rustPlatform,
+  rustc,
   cmake,
   pkg-config,
   fetchFromGitHub,
   libgit2,
   openssl,
+  aws-lc,
+  oniguruma,
+  sqlite,
   git,
   glib,
   dbus,
@@ -47,9 +51,22 @@ rustPlatform.buildRustPackage (finalAttrs: {
   buildInputs = [
     libgit2Experimental
     openssl
+    aws-lc
+    oniguruma
+    sqlite
     glib
     dbus
   ];
+
+  # autoreview: 2026-11-13-rust-llvm-vnni
+  # Rust >= 1.98 uses the LLVM >= 22 VNNI intrinsic signatures.
+  postPatch =
+    lib.optionalString
+      (lib.versionAtLeast rustc.version "1.98" && lib.versionOlder rustc.llvmPackages.llvm.version "22")
+      ''
+        patch -d "$cargoDepsCopy/source-registry-0/adler32furious-0.1.1" -p1 \
+          < ${./adler32furious-llvm21.patch}
+      '';
 
   nativeCheckInputs = [ git ];
 
